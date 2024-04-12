@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 
-	"fortepiano-bot/internal/model"
+	"github.com/Levitskyy/fortepiano-bot/internal/model"
 
 	"github.com/jmoiron/sqlx"
 )
