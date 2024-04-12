@@ -1,4 +1,4 @@
-module fortepiano-bot
+module github.com/Levitskyy/fortepiano-bot
 
 go 1.18
 
@@ -6,6 +6,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/lib/pq v1.2.0
 )
 
 require (
