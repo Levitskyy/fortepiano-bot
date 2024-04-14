@@ -45,8 +45,7 @@ func (s *UserPostgreStorage) UpdateEmail(ctx context.Context, user model.User, e
 
 	if _, err := conn.ExecContext(
 		ctx,
-		`UPDATE users SET email = $1 WHERE id = $2
-			ON CONFLICT DO NOTHING;`,
+		`UPDATE users SET email = $1 WHERE id = $2;`,
 		email,
 		user.Id,
 	); err != nil {
@@ -54,4 +53,17 @@ func (s *UserPostgreStorage) UpdateEmail(ctx context.Context, user model.User, e
 	}
 
 	return nil
+}
+
+func (s *UserPostgreStorage) GetEmail(ctx context.Context, user model.User) (string, error) {
+	err := s.db.Get(&user, "SELECT * FROM users WHERE id=$1", user.Id)
+	if err != nil {
+		return "", err
+	}
+
+	if !user.Email.Valid {
+		return "", nil
+	}
+
+	return user.Email.String, nil
 }

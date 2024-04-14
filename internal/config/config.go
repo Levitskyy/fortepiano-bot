@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	TelegramBotToken string `env:"TELEGRAM_BOT_TOKEN" env-required:"true"`
-	DatabaseDSN      string `env:"DATABASE_DSN" env-default:"postgresql://postgres:postgres@composepostgres:5432/fortepiano-bot?sslmode=disable"`
+	DatabaseDSN      string `env:"DATABASE_DSN" env-required:"true"`
 	PaymentToken     string `env:"PAYMENT_TOKEN" env-required:"true"`
 }
 

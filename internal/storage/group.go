@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Levitskyy/fortepiano-bot/internal/model"
 
@@ -35,4 +36,13 @@ func (s *GroupPostgreStorage) Add(ctx context.Context, group model.Group) error 
 	}
 
 	return nil
+}
+
+func (s *GroupPostgreStorage) GetId(ctx context.Context, group model.Group) (int64, error) {
+	err := s.db.Get(&group, "SELECT * FROM groups WHERE name=$1", group.Name)
+	if err == nil {
+		return group.Id, nil
+	}
+
+	return 0, fmt.Errorf("no group with name %s", group.Name)
 }

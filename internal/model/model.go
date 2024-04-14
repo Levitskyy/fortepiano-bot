@@ -1,23 +1,26 @@
 package model
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type User struct {
 	Id        int64
 	Name      string
-	Email     string
-	CreatedAt time.Time
+	Email     sql.NullString
+	CreatedAt time.Time `db:"created_at"`
 }
 
 type Group struct {
 	Id         int64
 	Name       string
-	InviteLink string
+	InviteLink string `db:"invite_link"`
 }
 
 type Subscription struct {
 	Id      int
-	UserId  int64
-	GroupId int64
-	EndDate time.Time
+	UserId  int64     `db:"user_id"`
+	GroupId int64     `db:"group_id"`
+	EndDate time.Time `db:"end_date"`
 }

@@ -12,8 +12,10 @@ import (
 type ViewFunc func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error
 
 type Bot struct {
-	api      *tgbotapi.BotAPI
-	cmdViews map[string]ViewFunc
+	api           *tgbotapi.BotAPI
+	cmdViews      map[string]ViewFunc
+	callbackViews map[string]ViewFunc
+	paymentViews  map[string]ViewFunc
 }
 
 func New(api *tgbotapi.BotAPI) *Bot {
@@ -26,6 +28,22 @@ func (b *Bot) RegisterCmdView(cmd string, view ViewFunc) {
 	}
 
 	b.cmdViews[cmd] = view
+}
+
+func (b *Bot) RegisterCallbackView(cmd string, view ViewFunc) {
+	if b.callbackViews == nil {
+		b.callbackViews = make(map[string]ViewFunc)
+	}
+
+	b.callbackViews[cmd] = view
+}
+
+func (b *Bot) RegisterPaymentView(cmd string, view ViewFunc) {
+	if b.paymentViews == nil {
+		b.paymentViews = make(map[string]ViewFunc)
+	}
+
+	b.paymentViews[cmd] = view
 }
 
 func (b *Bot) Run(ctx context.Context) error {
@@ -56,19 +74,43 @@ func (b *Bot) handleUpdate(ctx context.Context, update tgbotapi.Update) {
 	}()
 
 	var cmd string
-	if update.CallbackQuery != nil {
-		cmd = update.CallbackQuery.Data
-	} else if update.Message.IsCommand() {
-		cmd = update.Message.Command()
-	} else {
+	cmdView := func() ViewFunc {
+		if update.CallbackQuery != nil {
+			cmd = update.CallbackQuery.Data
+			cmdView, ok := b.callbackViews[cmd]
+			if !ok {
+				return nil
+			}
+			return cmdView
+		} else if update.PreCheckoutQuery != nil {
+			cmd = "PCQ"
+			cmdView, ok := b.cmdViews[cmd]
+			if !ok {
+				return nil
+			}
+			return cmdView
+		} else if update.Message.SuccessfulPayment != nil {
+			cmd = update.Message.SuccessfulPayment.InvoicePayload
+			cmdView, ok := b.paymentViews[cmd]
+			if !ok {
+				return nil
+			}
+			return cmdView
+		} else if update.Message.IsCommand() {
+			cmd = update.Message.Command()
+			cmdView, ok := b.cmdViews[cmd]
+			if !ok {
+				return nil
+			}
+			return cmdView
+		} else {
+			return nil
+		}
+	}()
+
+	if cmdView == nil {
 		return
 	}
-
-	cmdView, ok := b.cmdViews[cmd]
-	if !ok {
-		return
-	}
-
 	if err := cmdView(ctx, b.api, update); err != nil {
 		log.Printf("ERROR failed to execute view: %v", err)
 
