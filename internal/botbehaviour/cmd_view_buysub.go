@@ -151,6 +151,10 @@ func CmdViewGetUsersSubs(subsGetter SubsGetter, groupGetter GroupGetter) bot.Vie
 			msg += fmt.Sprintf("%s: Подписка до %s\n%s\n\n", groupName, v.EndDate.Format("02/01/2006"), groupLink)
 		}
 
+		if msg == "" {
+			msg = "Нет активных подписок"
+		}
+
 		reply := tgbotapi.NewEditMessageTextAndMarkup(
 			update.CallbackQuery.From.ID,
 			update.CallbackQuery.Message.MessageID,
