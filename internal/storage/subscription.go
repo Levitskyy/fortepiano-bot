@@ -77,3 +77,26 @@ func (s *SubscriptionPostgreStorage) UpdateEndDate(ctx context.Context, subscrip
 
 	return nil
 }
+
+func (s *SubscriptionPostgreStorage) IsSubActive(ctx context.Context, subscription model.Subscription) (bool, error) {
+	err := s.db.Get(&subscription, "SELECT * FROM subscriptions WHERE user_id=$1 AND group_id=$2", subscription.UserId, subscription.GroupId)
+	if err != nil {
+		return false, nil
+	}
+	if time.Now().After(subscription.EndDate) {
+		return false, nil
+	}
+	return true, nil
+}
+
+func (s *SubscriptionPostgreStorage) GetUserSubs(ctx context.Context, subscription model.Subscription) ([]model.Subscription, error) {
+	subs := []model.Subscription{}
+
+	err := s.db.Select(&subs, "SELECT * FROM subscriptions WHERE user_id=$1 AND end_date > $2::timestamp", subscription.UserId, time.Now().Format(time.RFC3339))
+	if err != nil {
+		return nil, err
+	}
+
+	return subs, nil
+
+}

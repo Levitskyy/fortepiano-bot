@@ -31,8 +31,12 @@ func CmdViewMyEmail(getter EmailGetter) bot.ViewFunc {
 		if err != nil {
 			return err
 		}
-		reply := tgbotapi.NewMessage(update.CallbackQuery.From.ID, fmt.Sprintf("Ваша почта: %s\n\nЧтобы изменить почту напишите /email <Ваша почта>", email))
-		reply.ReplyMarkup = botkeyboard.BackToMenuInlineKeyboard
+		reply := tgbotapi.NewEditMessageTextAndMarkup(
+			update.CallbackQuery.From.ID,
+			update.CallbackQuery.Message.MessageID,
+			fmt.Sprintf("Ваша почта: %s\n\nЧтобы изменить почту напишите /email <Ваша почта>", email),
+			botkeyboard.BackToMenuInlineKeyboard,
+		)
 
 		if _, err := bot.Send(reply); err != nil {
 			return err
@@ -72,7 +76,7 @@ func CmdViewUpdateMyEmail(setter EmailSetter) bot.ViewFunc {
 		}
 
 		reply := tgbotapi.NewMessage(update.Message.Chat.ID, "Адрес эл.почты обновлён")
-		reply.ReplyMarkup = botkeyboard.MenuInlineKeyboard
+		reply.ReplyMarkup = botkeyboard.BackToMenuInlineKeyboard
 		if _, err := bot.Send(reply); err != nil {
 			return err
 		}

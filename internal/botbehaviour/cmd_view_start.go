@@ -54,15 +54,25 @@ func CmdViewOpenMenu() bot.ViewFunc {
 
 func CmdViewBackToMenu() bot.ViewFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
-		reply := tgbotapi.NewMessage(update.CallbackQuery.From.ID, "Меню")
-		reply.ReplyMarkup = botkeyboard.MenuInlineKeyboard
+		reply := tgbotapi.NewEditMessageTextAndMarkup(
+			update.CallbackQuery.From.ID,
+			update.CallbackQuery.Message.MessageID,
+			"Меню",
+			botkeyboard.MenuInlineKeyboard,
+		)
 
 		if _, err := bot.Send(reply); err != nil {
 			return err
 		}
 
-		del := tgbotapi.NewDeleteMessage(update.CallbackQuery.From.ID, update.CallbackQuery.Message.MessageID)
-		if _, err := bot.Request(del); err != nil {
+		return nil
+	}
+}
+
+func CmdViewSkipCallback() bot.ViewFunc {
+	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
+		callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "")
+		if _, err := bot.Request(callback); err != nil {
 			return err
 		}
 

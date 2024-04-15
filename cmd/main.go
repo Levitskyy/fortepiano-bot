@@ -44,6 +44,9 @@ func main() {
 	bot.RegisterCallbackView("myEmailIK", botbehaviour.CmdViewMyEmail(userStorage))
 	bot.RegisterCallbackView("menuIK", botbehaviour.CmdViewBackToMenu())
 	bot.RegisterCallbackView("buySubsIK", botbehaviour.CmdViewSubOptions())
+	bot.RegisterCallbackView("fortePianoCourseIK", botbehaviour.CmdViewSkipCallback())
+	bot.RegisterCallbackView("ChatJoinRequest", botbehaviour.CmdViewChatJoinRequest(subscriptionStorage))
+	bot.RegisterCallbackView("getMySubsIK", botbehaviour.CmdViewGetUsersSubs(subscriptionStorage, groupStorage))
 
 	for _, v := range []int{1, 3, 6, 12} {
 		bot.RegisterCallbackView(fmt.Sprintf("FortePianoChannel_%d", v), botbehaviour.CmdViewBuySub("FortePianoChannel", v))

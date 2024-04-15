@@ -89,20 +89,30 @@ func (b *Bot) handleUpdate(ctx context.Context, update tgbotapi.Update) {
 				return nil
 			}
 			return cmdView
-		} else if update.Message.SuccessfulPayment != nil {
-			cmd = update.Message.SuccessfulPayment.InvoicePayload
-			cmdView, ok := b.paymentViews[cmd]
+		} else if update.ChatJoinRequest != nil {
+			cmd = "ChatJoinRequest"
+			cmdView, ok := b.callbackViews[cmd]
 			if !ok {
 				return nil
 			}
 			return cmdView
-		} else if update.Message.IsCommand() {
-			cmd = update.Message.Command()
-			cmdView, ok := b.cmdViews[cmd]
-			if !ok {
-				return nil
+		} else if update.Message != nil {
+			if update.Message.SuccessfulPayment != nil {
+				cmd = update.Message.SuccessfulPayment.InvoicePayload
+				cmdView, ok := b.paymentViews[cmd]
+				if !ok {
+					return nil
+				}
+				return cmdView
+			} else if update.Message.IsCommand() {
+				cmd = update.Message.Command()
+				cmdView, ok := b.cmdViews[cmd]
+				if !ok {
+					return nil
+				}
+				return cmdView
 			}
-			return cmdView
+			return nil
 		} else {
 			return nil
 		}

@@ -46,3 +46,21 @@ func (s *GroupPostgreStorage) GetId(ctx context.Context, group model.Group) (int
 
 	return 0, fmt.Errorf("no group with name %s", group.Name)
 }
+
+func (s *GroupPostgreStorage) GetLink(ctx context.Context, group model.Group) (string, error) {
+	err := s.db.Get(&group, "SELECT * FROM groups WHERE id=$1", group.Id)
+	if err == nil {
+		return group.InviteLink, nil
+	}
+
+	return "", fmt.Errorf("no group with id %v", group.Id)
+}
+
+func (s *GroupPostgreStorage) GetName(ctx context.Context, group model.Group) (string, error) {
+	err := s.db.Get(&group, "SELECT * FROM groups WHERE id=$1", group.Id)
+	if err == nil {
+		return group.Name, nil
+	}
+
+	return "", fmt.Errorf("no group with id %v", group.Id)
+}

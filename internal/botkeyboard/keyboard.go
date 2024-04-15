@@ -43,6 +43,6 @@ var SubOptionsInlineKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 
 var BackToMenuInlineKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("<- Вернуться в меню", "menuIK"),
+		tgbotapi.NewInlineKeyboardButtonData("<- Назад в меню", "menuIK"),
 	),
 )
