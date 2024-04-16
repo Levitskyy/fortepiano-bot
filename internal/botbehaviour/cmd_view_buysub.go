@@ -3,6 +3,7 @@ package botbehaviour
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/Levitskyy/fortepiano-bot/internal/bot"
 	"github.com/Levitskyy/fortepiano-bot/internal/botkeyboard"
@@ -76,9 +77,24 @@ func CmdViewBuySub(groupName string, months int) bot.ViewFunc {
 // PreCheckoutQuery
 func CmdViewAnswerPCQ() bot.ViewFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
-		reply := tgbotapi.PreCheckoutConfig{
-			PreCheckoutQueryID: update.PreCheckoutQuery.ID,
-			OK:                 true,
+		reg := ".+:[0-9]+:INV"
+		ok, err := regexp.MatchString(reg, update.PreCheckoutQuery.InvoicePayload)
+		if err != nil {
+			return err
+		}
+
+		var reply tgbotapi.PreCheckoutConfig
+		if !ok {
+			reply = tgbotapi.PreCheckoutConfig{
+				PreCheckoutQueryID: update.PreCheckoutQuery.ID,
+				OK:                 false,
+				ErrorMessage:       "invalid goods",
+			}
+		} else {
+			reply = tgbotapi.PreCheckoutConfig{
+				PreCheckoutQueryID: update.PreCheckoutQuery.ID,
+				OK:                 true,
+			}
 		}
 		if _, err := bot.Request(reply); err != nil {
 			return err

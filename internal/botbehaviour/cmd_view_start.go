@@ -28,8 +28,8 @@ func CmdViewStart(adder UserAdder) bot.ViewFunc {
 			return err
 		}
 
-		reply := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Hello, %s!", update.Message.From.UserName))
-		reply.ReplyMarkup = botkeyboard.GetMenuKeyboard
+		reply := tgbotapi.NewMessage(update.Message.Chat.ID, "Меню")
+		reply.ReplyMarkup = botkeyboard.MenuInlineKeyboard
 
 		if _, err := bot.Send(reply); err != nil {
 			return err
